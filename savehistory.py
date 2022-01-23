@@ -81,7 +81,7 @@ def main(host, token, room):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Sync room history. Access token expected in $AUTH_TOKEN.',
+    parser = argparse.ArgumentParser(description='Sync room history and save to separate database. Access token expected in $AUTH_TOKEN.',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--host', help='matrix host URL', default=Host)
     parser.add_argument('--room', help='internal room_id', default=Room_Id)

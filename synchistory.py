@@ -6,9 +6,8 @@ import requests
 import sys
 
 Host = "https://ostez.com"
-Room_Id = "!XBHXetkKeLSOaFJiaH%3Amatrix.org"
+Room_Id = "!KNlqwBRiVdbAwkVpKO%3Amatrix.org"
 Token = ""
-Marker = "t14614-136308_1588369_23795_187249_7019_54_2_5708_5"
 
 
 def getfrom(host, token, room, marker):
@@ -35,6 +34,21 @@ def getfrom(host, token, room, marker):
     return end
 
 
+def getmarker(host, token, room):
+    path = "/_matrix/client/r0/rooms/" + room + "/messages"
+    params = {'access_token': token}
+    url = host + path
+
+    r = requests.get(url, params=params)
+    if r.status_code != 200:
+        print("bad response code:", r.status_code, locals())
+        return
+
+    jbody = r.json()
+    print(json.dumps(jbody, indent=4))
+    return jbody['end']
+
+
 def main(host, token, room, marker):
     while marker:
         nextmarker = getfrom(host, token, room, marker)
@@ -49,8 +63,8 @@ if __name__ == '__main__':
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--host', help='matrix host URL', default=Host)
     parser.add_argument('--room', help='internal room_id', default=Room_Id)
-    parser.add_argument('marker', help='marker token from /messages response', \
-                        default=Marker)
+    parser.add_argument('--marker', help='marker token from /messages response', \
+                        default=None)
     args = parser.parse_args()
 
     token = os.getenv("AUTH_TOKEN")
@@ -58,5 +72,7 @@ if __name__ == '__main__':
         print("Error: AUTH_TOKEN not set")
         sys.exit(1)
 
-    main(args.host, token, args.room, args.marker)
+    marker = args.marker or getmarker(args.host, token, args.room)
+    
+    main(args.host, token, args.room, marker)
 
